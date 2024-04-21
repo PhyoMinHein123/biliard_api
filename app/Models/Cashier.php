@@ -12,14 +12,14 @@ class Cashier extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name', 'phone', 'status', 'shop_id'
+        'name', 'phone', 'status', 'address', 'shop_id'
+    ];
+    
+    protected $casts = [
+        'created_at' => 'datetime: Y-m-d H:i:s',
+        'updated_at' => 'datetime: Y-m-d H:i:s'
     ];
 
-    public function shop(): BelongsTo
-    {
-        return $this->belongsTo(Shop::class, 'shop_id');
-    }
-    
     protected static function boot()
     {
 
@@ -39,5 +39,10 @@ class Cashier extends Model
                 $model->updated_by = auth()->user()->id;
             }
         });
+    }
+
+    public function shop(): BelongsTo
+    {
+        return $this->belongsTo(Shop::class, 'shop_id');
     }
 }

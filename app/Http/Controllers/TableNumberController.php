@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TableNumberStoreRequest;
 use App\Http\Requests\TableNumberUpdateRequest;
 use App\Models\TableNumber;
+use App\Models\Shop;
+use App\Models\User;
+use App\Models\Cashier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,12 +20,21 @@ class TableNumberController extends Controller
 
         try {
 
-            $tableNumbers = TableNumber::with(['orders'])
+            $tableNumbers = TableNumber::searchQuery()
                 ->sortingQuery()
-                ->searchQuery()
                 ->filterQuery()
                 ->filterDateQuery()
                 ->paginationQuery();
+
+            $tableNumbers->transform(function ($tableNumber) {
+                $tableNumber->shop_id = $tableNumber->shop_id ? Shop::find($tableNumber->shop_id)->name : "Unknown";
+                $tableNumber->cashier_id = $tableNumber->cashier_id ? Cashier::find($tableNumber->cashier_id)->name : "Unknown";
+                $tableNumber->created_by = $tableNumber->created_by ? User::find($tableNumber->created_by)->name : "Unknown";
+                $tableNumber->updated_by = $tableNumber->updated_by ? User::find($tableNumber->updated_by)->name : "Unknown";
+                $tableNumber->deleted_by = $tableNumber->deleted_by ? User::find($tableNumber->deleted_by)->name : "Unknown";
+                
+                return $tableNumber;
+            });
 
             DB::commit();
 

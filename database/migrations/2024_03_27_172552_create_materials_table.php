@@ -16,15 +16,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('image')->nullable();
-            $table->unsignedInteger('qty');
-            $table->unsignedBigInteger('shop_id');
             $table->string('status')->default(GeneralStatusEnum::ACTIVE->value);
             $table->auditColumns();
-
-            $table->foreign('shop_id')
-                ->references('id')
-                ->on('shops')
-                ->onDelete('cascade');
         });
     }
 

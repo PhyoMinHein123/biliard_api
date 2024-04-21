@@ -6,6 +6,8 @@ use App\Enums\GeneralStatusEnum;
 use App\Http\Requests\CashierStoreRequest;
 use App\Http\Requests\CashierUpdateRequest;
 use App\Models\Cashier;
+use App\Models\User;
+use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,15 +20,24 @@ class CashierController extends Controller
 
         try {
 
-            $categories = Cashier::sortingQuery()
+            $cashiers = Cashier::sortingQuery()
                 ->searchQuery()
                 ->filterQuery()
                 ->filterDateQuery()
                 ->paginationQuery();
 
+            $cashiers->transform(function ($cashier) {
+                $cashier->shop_id = $cashier->shop_id ? Shop::find($cashier->shop_id)->name : "Unknown";
+                $cashier->created_by = $cashier->created_by ? User::find($cashier->created_by)->name : "Unknown";
+                $cashier->updated_by = $cashier->updated_by ? User::find($cashier->updated_by)->name : "Unknown";
+                $cashier->deleted_by = $cashier->deleted_by ? User::find($cashier->deleted_by)->name : "Unknown";
+                
+                return $cashier;
+            });
+
             DB::commit();
 
-            return $this->success('categories retrived successfully', $categories);
+            return $this->success('cashiers retrived successfully', $cashiers);
 
         } catch (Exception $e) {
             DB::rollback();
@@ -39,7 +50,6 @@ class CashierController extends Controller
     {
         DB::beginTransaction();
         $payload = collect($request->validated());
-        $payload['status'] = GeneralStatusEnum::ACTIVE->value;
 
         try {
 

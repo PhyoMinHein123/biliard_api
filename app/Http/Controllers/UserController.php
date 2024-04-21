@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
+use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +29,15 @@ class UserController extends Controller
                 ->filterQuery()
                 ->filterDateQuery()
                 ->paginationQuery();
+
+            $users->transform(function ($user) {
+                $user->shop_id = $user->shop_id ? Shop::find($user->shop_id)->name : "Unknown";
+                $user->created_by = $user->created_by ? User::find($user->created_by)->name : "Unknown";
+                $user->updated_by = $user->updated_by ? User::find($user->updated_by)->name : "Unknown";
+                $user->deleted_by = $user->deleted_by ? User::find($user->deleted_by)->name : "Unknown";
+                
+                return $user;
+            });
 
             DB::commit();
 
@@ -94,7 +104,15 @@ class UserController extends Controller
         try {
 
             $user = User::findOrFail($id);
+
+            if (isset($payload['image']) && is_file($payload['image'])) {
+                $path = $request->file('image')->store('public/images');
+                $image_url = Storage::url($path);
+                $payload['image'] = $image_url;
+            }
+
             $user->update($payload->toArray());
+
             DB::commit();
 
             return $this->success('user updated successfully by id', $user);
@@ -112,7 +130,7 @@ class UserController extends Controller
         try {
 
             $user = User::findOrFail($id);
-            $user->delete($id);
+            $user->forceDelete();
 
             DB::commit();
 
@@ -175,7 +193,7 @@ class UserController extends Controller
 
     public function exportexcel()
     {
-        return Excel::download(new ExportUser, 'Shops.xlsx');
+        return Excel::download(new ExportUser, 'Users.xlsx');
     }
 
     public function exportparams(Request $request)

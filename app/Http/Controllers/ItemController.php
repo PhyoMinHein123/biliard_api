@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ItemStoreRequest;
 use App\Http\Requests\ItemUpdateRequest;
 use App\Models\Item;
+use App\Models\User;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -18,10 +20,20 @@ class ItemController extends Controller
 
         try {
 
-            $items = Item::with('category')
+            $items = Item::searchQuery()
                 ->sortingQuery()
-                ->searchQuery()
+                ->filterQuery()
+                ->filterDateQuery()
                 ->paginationQuery();
+
+            $items->transform(function ($item) {
+                $item->category_id = $item->category_id ? Category::find($item->category_id)->name : "Unknown";
+                $item->created_by = $item->created_by ? User::find($item->created_by)->name : "Unknown";
+                $item->updated_by = $item->updated_by ? User::find($item->updated_by)->name : "Unknown";
+                $item->deleted_by = $item->deleted_by ? User::find($item->deleted_by)->name : "Unknown";
+                
+                return $item;
+            });
 
             DB::commit();
 
@@ -66,7 +78,7 @@ class ItemController extends Controller
 
         try {
 
-            $product = Item::with('category')->findOrFail($id);
+            $product = Item::findOrFail($id);
             DB::commit();
 
             return $this->success('product retrived successfully by id', $product);
@@ -125,7 +137,7 @@ class ItemController extends Controller
         try {
 
             $product = Item::findOrFail($id);
-            $product->delete($id);
+            $product->forceDelete();
 
             /****
              *

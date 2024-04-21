@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CustomerStoreRequest;
 use App\Http\Requests\CustomerUpdateRequest;
 use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +20,17 @@ class CustomerController extends Controller
 
             $customers = Customer::sortingQuery()
                 ->searchQuery()
+                ->filterQuery()
+                ->filterDateQuery()
                 ->paginationQuery();
+
+            $customers->transform(function ($customer) {
+                $customer->created_by = $customer->created_by ? User::find($customer->created_by)->name : "Unknown";
+                $customer->updated_by = $customer->updated_by ? User::find($customer->updated_by)->name : "Unknown";
+                $customer->deleted_by = $customer->deleted_by ? User::find($customer->deleted_by)->name : "Unknown";
+                
+                return $customer;
+            });
 
             DB::commit();
 

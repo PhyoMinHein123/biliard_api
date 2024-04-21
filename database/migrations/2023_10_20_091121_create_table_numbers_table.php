@@ -17,12 +17,18 @@ return new class extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->unsignedInteger('cashier_id');
+            $table->unsignedInteger('shop_id');
             $table->string('status')->default(TableStatusEnum::SUCCESS->value);
             $table->auditColumns();
 
             $table->foreign('cashier_id')
                 ->references('id')
                 ->on('cashiers')
+                ->onDelete('cascade');
+            
+            $table->foreign('shop_id')
+                ->references('id')
+                ->on('shops')
                 ->onDelete('cascade');
         });
     }

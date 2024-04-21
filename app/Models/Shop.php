@@ -21,8 +21,6 @@ class Shop extends Model
     ];
 
     protected $casts = [
-        'open_time' => 'datetime: H:i',
-        'close_time' => 'datetime: H:i',
         'is_warehouse' => 'boolean',
         'created_at' => 'datetime: Y-m-d H:i:s',
         'updated_at' => 'datetime: Y-m-d H:i:s'

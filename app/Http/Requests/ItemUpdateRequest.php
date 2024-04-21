@@ -5,9 +5,9 @@ namespace App\Http\Requests;
 use App\Enums\GeneralStatusEnum;
 use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use App\Helpers\Enum;
 
-class ProductUpdateRequest extends FormRequest
+class ItemUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,18 +26,15 @@ class ProductUpdateRequest extends FormRequest
     {
         $categories = Category::all()->pluck('id')->toArray();
         $categories = implode(',', $categories);
+        $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
 
         return [
             'name' => 'string',
-            'image' => ['image', 'mimes:jpg,png,jpeg,gif,svg', 'max:2048'],
+            'image' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             'price' => 'numeric',
-            'original_price' => 'numeric',
-            'status' => Rule::in([
-                GeneralStatusEnum::ACTIVE->value,
-                GeneralStatusEnum::DISABLE->value,
-            ]),
+            'purchase_price' => 'numeric',
+            'status' => "required|in:$enum"
             'category_id' => "in:$categories",
-            'qty' => 'nullable',
         ];
     }
 }

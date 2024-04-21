@@ -16,8 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('status')->default(GeneralStatusEnum::ACTIVE->value);
-            $table->timestamps();
-            $table->softDeletes();
+            $table->auditColumns();
         });
     }
 

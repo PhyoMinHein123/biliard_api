@@ -3,9 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Models\Category;
+use App\Enums\GeneralStatusEnum;
+use App\Helpers\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProductStoreRequest extends FormRequest
+class ItemStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,14 +26,15 @@ class ProductStoreRequest extends FormRequest
     {
         $categories = Category::all()->pluck('id')->toArray();
         $categories = implode(',', $categories);
+        $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
 
         return [
             'name' => 'required| string',
             'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             'price' => 'required| numeric',
-            'original_price' => 'required| numeric',
+            'purchase_price' => 'required| numeric',
             'category_id' => "required| in:$categories",
-            'qty' => 'nullable',
+            'status' => "required|in:$enum"
         ];
     }
 }

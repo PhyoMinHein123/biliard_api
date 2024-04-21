@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\GeneralStatusEnum;
+use App\Helpers\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CategoryStoreRequest extends FormRequest
@@ -21,8 +23,11 @@ class CategoryStoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
+
         return [
-            'name' => 'required|string|min:3|max:1000',
+            'name' => 'required|string|unique:categories,email|min:3|max:1000',
+            'status' => "required|in:$enum"
         ];
     }
 }

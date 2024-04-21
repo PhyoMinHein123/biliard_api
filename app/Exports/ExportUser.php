@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\User;
+use App\Models\Shop;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -40,6 +41,8 @@ class ExportUser implements FromCollection, WithHeadings, WithMapping
         $createdByUser = User::find($post->created_by);
         $updatedByUser = User::find($post->updated_by);
 
+        $shopName = Shop::find($post->shop_id);
+
         return [
             $post->id,
             $post->name,
@@ -47,7 +50,7 @@ class ExportUser implements FromCollection, WithHeadings, WithMapping
             $post->phone,
             $post->email,
             $post->address,
-            $post->shop_id,
+            $shopName ? $shopName->name : 'Unknown',
             $post->status,
             $createdByUser ? $createdByUser->name : 'Unknown',
             $updatedByUser ? $updatedByUser->name : 'Unknown',

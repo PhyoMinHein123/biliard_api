@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('phone');
+            $table->string('address');
             $table->string('status')->default(GeneralStatusEnum::ACTIVE->value);
             $table->string('shop_id');
             $table->auditColumns();

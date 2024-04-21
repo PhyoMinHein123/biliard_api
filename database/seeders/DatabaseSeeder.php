@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
 
             ShopSeeder::class,
             SuperAdminSeeder::class,
-            CategorySeeder::class,
+            // CategorySeeder::class,
             
             // CashierSeeder::class,
             // TableNumberSeeder::class,

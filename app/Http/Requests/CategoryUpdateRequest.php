@@ -3,8 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Enums\GeneralStatusEnum;
+use App\Helpers\Enum;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CategoryUpdateRequest extends FormRequest
 {
@@ -23,12 +23,11 @@ class CategoryUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
+
         return [
             'name' => 'string|min:3|max:1000',
-            'status' => Rule::in([
-                GeneralStatusEnum::ACTIVE->value,
-                GeneralStatusEnum::DISABLE->value,
-            ]),
+            'status' => "required|in:$enum"
         ];
     }
 }

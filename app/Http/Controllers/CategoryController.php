@@ -6,8 +6,14 @@ use App\Enums\GeneralStatusEnum;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ExportShop;
+use App\Exports\ExportShopParams;
+use App\Imports\ImportShop;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CategoryController extends Controller
 {
@@ -24,6 +30,14 @@ class CategoryController extends Controller
                 ->filterDateQuery()
                 ->paginationQuery();
 
+            $categories->transform(function ($category) {
+                $category->created_by = $category->created_by ? User::find($category->created_by)->name : "Unknown";
+                $category->updated_by = $category->updated_by ? User::find($category->updated_by)->name : "Unknown";
+                $category->deleted_by = $category->deleted_by ? User::find($category->deleted_by)->name : "Unknown";
+                
+                return $category;
+            });
+
             DB::commit();
 
             return $this->success('categories retrived successfully', $categories);
@@ -39,7 +53,6 @@ class CategoryController extends Controller
     {
         DB::beginTransaction();
         $payload = collect($request->validated());
-        $payload['status'] = GeneralStatusEnum::ACTIVE->value;
 
         try {
 
@@ -101,7 +114,7 @@ class CategoryController extends Controller
         try {
 
             $category = Category::findOrFail($id);
-            $category->delete($id);
+            $category->forceDelete();
 
             DB::commit();
 
@@ -112,5 +125,52 @@ class CategoryController extends Controller
 
             return $this->internalServerError();
         }
+    }
+
+    public function exportexcel()
+    {
+        return Excel::download(new ExportShop, 'Shops.xlsx');
+    }
+
+    public function exportparams(Request $request)
+    {
+        $filters = [
+            'page' => $request->input('page'),
+            'per_page' => $request->input('per_page'),
+            'columns' => $request->input('columns'),
+            'search' => $request->input('search'),
+            'order' => $request->input('order'),
+            'sort' => $request->input('sort'),
+            'value' => $request->input('value'),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
+        ];
+        return Excel::download(new ExportShopParams($filters), 'Shops.xlsx');
+    }
+
+    public function exportpdf()
+    {
+        $data = Shop::all();
+        $pdf = Pdf::loadView('shopexport', ['data' => $data]);
+        return $pdf->download();
+    }
+
+    public function exportpdfparams()
+    {
+        $data = Shop::searchQuery()
+        ->sortingQuery()
+        ->filterQuery()
+        ->filterDateQuery()
+        ->paginationQuery();
+        
+        $pdf = Pdf::loadView('shopexport', ['data' => $data]);
+        return $pdf->download();
+    }
+
+    public function import()
+    {
+        Excel::import(new ImportShop, request()->file('file'));
+
+        return $this->success('Shop is imported successfully');
     }
 }

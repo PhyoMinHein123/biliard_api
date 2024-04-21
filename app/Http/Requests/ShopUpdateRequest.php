@@ -23,11 +23,11 @@ class ShopUpdateRequest extends FormRequest
     {
 
         return [
-            'name' => 'string',
-            'phone' => ['nullable', 'min:9', 'max:13'],
-            'address' => 'string',
-            'open_time' => 'date_format:H:i',
-            'close_time' => ['date_format:H:i', 'after:open_time'],
+            'name' => 'required|string',
+            'phone' => 'nullable|min:9|max:13',
+            'address' => 'required|string',
+            'open_time' => 'required|date_format:H:i',
+            'close_time' => 'required|date_format:H:i|after:open_time',
         ];
     }
 }

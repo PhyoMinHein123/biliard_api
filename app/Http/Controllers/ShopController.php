@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ShopStoreRequest;
 use App\Http\Requests\ShopUpdateRequest;
 use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -17,20 +18,26 @@ class ShopController extends Controller
 {
     public function index(Request $request)
     {
-
         DB::beginTransaction();
 
         try {
-
             $shops = Shop::searchQuery()
                 ->sortingQuery()
                 ->filterQuery()
                 ->filterDateQuery()
                 ->paginationQuery();
 
+            $shops->transform(function ($shop) {
+                $shop->created_by = $shop->created_by ? User::find($shop->created_by)->name : "Unknown";
+                $shop->updated_by = $shop->updated_by ? User::find($shop->updated_by)->name : "Unknown";
+                $shop->deleted_by = $shop->deleted_by ? User::find($shop->deleted_by)->name : "Unknown";
+                
+                return $shop;
+            });
+
             DB::commit();
 
-            return $this->success('shops retrived successfully', $shops);
+            return $this->success('Shops retrieved successfully', $shops);
 
         } catch (Exception $e) {
             DB::rollback();
@@ -104,7 +111,7 @@ class ShopController extends Controller
         try {
 
             $shop = Shop::findOrFail($id);
-            $shop->delete($id);
+            $shop->forceDelete();
 
             DB::commit();
 

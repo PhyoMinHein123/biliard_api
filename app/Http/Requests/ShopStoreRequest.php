@@ -24,10 +24,10 @@ class ShopStoreRequest extends FormRequest
 
         return [
             'name' => 'required| string',
-            'phone' => ['nullable', 'min:9', 'max:13'],
+            'phone' => 'nullable|min:9|max:13',
             'address' => 'required| string',
             'open_time' => 'required| date_format:H:i',
-            'close_time' => ['required', 'date_format:H:i', 'after:open_time'],
+            'close_time' => 'required|date_format:H:i|after:open_time',
             'is_warehouse' => 'boolean'
         ];
     }

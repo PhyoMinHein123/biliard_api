@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Customer;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CustomerUpdateRequest extends FormRequest
@@ -21,11 +22,13 @@ class CustomerUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $customer = Customer::findOrFail(request('id'));
+        $customerId = $customer->id;
 
         return [
-            'name' => 'string | min:4 |max:100',
-            'address' => 'nullable| string| max:100',
-            'phone' => ['nullable', 'min:9', 'max:13'],
+            'name' => 'required|string|min:4|max:100',
+            'address' => 'nullable|string|max:100',
+            'phone' => "nullable|unique:cashiers,phone,$customerId|min:9|max:13",
         ];
     }
 }

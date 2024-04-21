@@ -31,9 +31,9 @@ class UserStoreRequest extends FormRequest
         return [
             'name' => 'required|string| max:24 | min:4',
             'email' => 'required| email| unique:users,email|string',
-            'phone' => ['nullable', 'unique:users,phone', 'min:9', 'max:13'],
+            'phone' => 'nullable|unique:users,phone|min:9|max:13',
             'password' => 'required| max:24 | min:6',
-            'address' => 'string| nullable| max:100',
+            'address' => 'string| nullable| max:1000',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'shop_id' => "required|in:$shops",
             'status' => "required|in:$enum"

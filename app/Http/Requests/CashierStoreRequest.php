@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Shop;
 use Illuminate\Validation\Rule;
 use App\Enums\GeneralStatusEnum;
+use App\Helpers\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CashierStoreRequest extends FormRequest
@@ -27,15 +28,14 @@ class CashierStoreRequest extends FormRequest
 
         $shops = Shop::all()->pluck('id')->toArray();
         $shops = implode(',', $shops);
+        $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
 
         return [
             'name'=>'required| string',
             'phone' => ['nullable', 'unique:cashiers,phone', 'min:9', 'max:13'],
+            'address' => 'string| nullable| max:1000',
             'shop_id' => "required| in:$shops",
-            'status' => Rule::in([
-                GeneralStatusEnum::ACTIVE->value,
-                GeneralStatusEnum::DISABLE->value,
-            ]),
+            'status' => "required| in:$enum"
         ];
     }
 }

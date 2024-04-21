@@ -39,11 +39,14 @@ class ExportShop implements FromCollection, WithHeadings, WithMapping
         $createdByUser = User::find($post->created_by);
         $updatedByUser = User::find($post->updated_by);
 
+        $openTime = $post->open_time ? date('h:i A', strtotime($post->open_time)) : '';
+        $closeTime = $post->close_time ? date('h:i A', strtotime($post->close_time)) : '';
+
         return [
             $post->id,
             $post->name,
-            $post->open_time,
-            $post->close_time,
+            $openTime,
+            $closeTime,
             $post->address,
             $post->phone,
             $createdByUser ? $createdByUser->name : 'Unknown',

@@ -19,7 +19,6 @@ return new class extends Migration
             $table->unsignedInteger('price');
             $table->unsignedInteger('purchase_price');
             $table->string('status')->default(GeneralStatusEnum::ACTIVE->value);
-            $table->unsignedInteger('qty')->nullable();
             $table->unsignedBigInteger('category_id');
             $table->auditColumns();
 

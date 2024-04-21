@@ -2,9 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\REGXEnum;
-use App\Models\User;
+
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Shop;
+use App\Models\User;
+use App\Enums\GeneralStatusEnum;
+use App\Helpers\Enum;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -31,9 +34,8 @@ class UserUpdateRequest extends FormRequest
 
         return [
             'name' => 'required|string| max:24 | min:4',
-            'email' => 'required| email| unique:users,email,$user|string',
-            'phone' => ['nullable', 'unique:users,phone,$user', 'min:9', 'max:13'],
-            'password' => 'required| max:24 | min:6',
+            'email' => "required| email| unique:users,email,$userId|string",
+            'phone' => "nullable|unique:users,phone,$userId|min:9|max:13",
             'address' => 'string| nullable| max:100',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'shop_id' => "required|in:$shops",

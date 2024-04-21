@@ -4,7 +4,10 @@ namespace App\Http\Requests;
 
 use App\Enums\TableStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use App\Models\Shop;
+use App\Models\Cashier;
+use App\Enums\GeneralStatusEnum;
+use App\Helpers\Enum;
 
 class TableNumberUpdateRequest extends FormRequest
 {
@@ -23,13 +26,18 @@ class TableNumberUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $shops = Shop::all()->pluck('id')->toArray();
+        $shops = implode(',', $shops);
+        $cashiers = Cashier::all()->pluck('id')->toArray();
+        $cashiers = implode(',', $cashiers);
+        $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
+
         return [
-            'name' => 'string',
+            'name' => 'required| string',
             'description' => 'nullable| string',
-            'status' => Rule::in([
-                TableStatusEnum::SUCCESS->value,
-                TableStatusEnum::PENDING->value,
-            ]),
+            'status' => "required|in:$enum",
+            'shop_id' => "required|in:$shops",
+            'cashier_id' => "required|in:$cashiers"
         ];
     }
 }
