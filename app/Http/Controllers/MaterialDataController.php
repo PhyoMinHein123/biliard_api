@@ -105,24 +105,6 @@ class MaterialDataController extends Controller
 
             $materialData = MaterialData::findOrFail($id);
 
-            if ($request->hasFile('image')) {
-                $path = Storage::putFile('public', $request->file('image'));
-                $image_url = url('api/image/');
-                $payload['image'] = $image_url.'/'.$path;
-
-                /**
-                 * remove old image
-                 */
-                $old_image_url = $materialData->image;
-                $parsedUrl = parse_url($materialData->image);
-                $old_image_path = substr($parsedUrl['path'], 11);
-
-                if (Storage::exists($old_image_path)) {
-                    $delete = Storage::delete($old_image_path);
-                }
-
-            }
-
             $materialData->update($payload->toArray());
 
             DB::commit();
@@ -143,15 +125,6 @@ class MaterialDataController extends Controller
 
             $materialData = MaterialData::findOrFail($id);
             $materialData->forceDelete();
-
-            /****
-             *
-             * delete public image
-             */
-            // $old_image_url = $materialData->image;
-            // $parsedUrl = parse_url($materialData->image);
-            // $old_image_path = substr($parsedUrl['path'], 11);
-            // Storage::delete($old_image_path);
 
             DB::commit();
 

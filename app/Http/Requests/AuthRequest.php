@@ -3,10 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Enums\GeneralStatusEnum;
-use App\Helpers\Enum;
 
-class MaterialStoreRequest extends FormRequest
+class AuthRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,12 +21,9 @@ class MaterialStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
-
         return [
-            'name' => 'required| string|unique:materials,name',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-            'status' => "required|in:$enum"
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
         ];
     }
 }

@@ -146,7 +146,7 @@ class TransferItemController extends Controller
         try {
 
             $TransferItem = TransferItem::findOrFail($id);
-            $TransferItem->delete($id);
+            $TransferItem->forceDelete();
 
             DB::commit();
 

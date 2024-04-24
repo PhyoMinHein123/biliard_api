@@ -33,11 +33,10 @@ class UserUpdateRequest extends FormRequest
         $userId = $user->id;
 
         return [
-            'name' => 'required|string| max:24 | min:4',
+            'name' => "required|string| unique:users,name,$userId| max:24 | min:4",
             'email' => "required| email| unique:users,email,$userId|string",
             'phone' => "nullable|unique:users,phone,$userId|min:9|max:13",
             'address' => 'string| nullable| max:100',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'shop_id' => "required|in:$shops",
             'status' => "required|in:$enum"
         ];

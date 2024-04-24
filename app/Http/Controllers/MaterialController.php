@@ -52,9 +52,9 @@ class MaterialController extends Controller
         $payload = collect($request->validated());
 
         if ($request->hasFile('image')) {
-            $path = Storage::putFile('public', $request->file('image'));
-            $image_url = url('api/image/');
-            $payload['image'] = $image_url.'/'.$path;
+            $path = $request->file('image')->store('public/images');
+            $image_url = Storage::url($path);
+            $payload['image'] = $image_url;
         }
 
         try {
@@ -100,21 +100,9 @@ class MaterialController extends Controller
             $product = Material::findOrFail($id);
 
             if ($request->hasFile('image')) {
-                $path = Storage::putFile('public', $request->file('image'));
-                $image_url = url('api/image/');
-                $payload['image'] = $image_url.'/'.$path;
-
-                /**
-                 * remove old image
-                 */
-                $old_image_url = $product->image;
-                $parsedUrl = parse_url($product->image);
-                $old_image_path = substr($parsedUrl['path'], 11);
-
-                if (Storage::exists($old_image_path)) {
-                    $delete = Storage::delete($old_image_path);
-                }
-
+                $path = $request->file('image')->store('public/images');
+                $image_url = Storage::url($path);
+                $payload['image'] = $image_url;
             }
 
             $product->update($payload->toArray());

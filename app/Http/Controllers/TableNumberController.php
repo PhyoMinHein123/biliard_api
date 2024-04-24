@@ -112,7 +112,7 @@ class TableNumberController extends Controller
         try {
 
             $tableNumber = TableNumber::findOrFail($id);
-            $tableNumber->delete($id);
+            $tableNumber->forceDelete();
 
             DB::commit();
 

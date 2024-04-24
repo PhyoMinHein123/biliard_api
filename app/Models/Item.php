@@ -16,7 +16,6 @@ class Item extends Model
         'image',
         'price',
         'purchase_price',
-        'qty',
         'status',
         'category_id',
     ];
@@ -50,6 +49,11 @@ class Item extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function itemData()
+    {
+        return $this->hasMany('App\Models\ItemData', 'item_id');
     }
     
 }

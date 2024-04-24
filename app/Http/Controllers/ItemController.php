@@ -53,9 +53,9 @@ class ItemController extends Controller
         $payload = collect($request->validated());
 
         if ($request->hasFile('image')) {
-            $path = Storage::putFile('public', $request->file('image'));
-            $image_url = url('api/image/');
-            $payload['image'] = $image_url.'/'.$path;
+            $path = $request->file('image')->store('public/images');
+            $image_url = Storage::url($path);
+            $payload['image'] = $image_url;
         }
 
         try {
@@ -101,21 +101,9 @@ class ItemController extends Controller
             $product = Item::findOrFail($id);
 
             if ($request->hasFile('image')) {
-                $path = Storage::putFile('public', $request->file('image'));
-                $image_url = url('api/image/');
-                $payload['image'] = $image_url.'/'.$path;
-
-                /**
-                 * remove old image
-                 */
-                $old_image_url = $product->image;
-                $parsedUrl = parse_url($product->image);
-                $old_image_path = substr($parsedUrl['path'], 11);
-
-                if (Storage::exists($old_image_path)) {
-                    $delete = Storage::delete($old_image_path);
-                }
-
+                $path = $request->file('image')->store('public/images');
+                $image_url = Storage::url($path);
+                $payload['image'] = $image_url;
             }
 
             $product->update($payload->toArray());
@@ -143,10 +131,10 @@ class ItemController extends Controller
              *
              * delete public image
              */
-            // $old_image_url = $product->image;
-            // $parsedUrl = parse_url($product->image);
-            // $old_image_path = substr($parsedUrl['path'], 11);
-            // Storage::delete($old_image_path);
+            $old_image_url = $product->image;
+            $parsedUrl = parse_url($product->image);
+            $old_image_path = substr($parsedUrl['path'], 11);
+            Storage::delete($old_image_path);
 
             DB::commit();
 

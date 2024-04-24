@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\AuthRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Enums\GeneralStatusEnum;
@@ -27,27 +28,23 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
+    public function login(AuthRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
+        $payload = collect($request->validated());
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
+        DB::beginTransaction();
 
-        if (! $token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], 411);
+        if (! $token = auth()->attempt($payload->toArray())) {
+            return response()->json(['message' => 'Incorrect Email or Password '], 403);
         }
+        
         $user = Auth::user();
 
         if ($user->status !== GeneralStatusEnum::ACTIVE->value) {
-            return response()->json(['error' => 'User is no Acitve'], 400);
+            return response()->json(['message' => 'Account is not ACTIVE'], 400);
         }
 
-        return $this->success('token created successfully', $this->createNewToken($token), $user);
+        return $this->success('Login Successfully', $this->createNewToken($token), $user);
     }
 
     /**

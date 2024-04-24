@@ -29,7 +29,7 @@ class UserStoreRequest extends FormRequest
         $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
 
         return [
-            'name' => 'required|string| max:24 | min:4',
+            'name' => 'required|string| unique:users,name| max:24 | min:4',
             'email' => 'required| email| unique:users,email|string',
             'phone' => 'nullable|unique:users,phone|min:9|max:13',
             'password' => 'required| max:24 | min:6',

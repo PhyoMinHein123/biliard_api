@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\GeneralStatusEnum;
 use App\Helpers\Enum;
+use App\Models\Material;
 
 class MaterialUpdateRequest extends FormRequest
 {
@@ -23,11 +24,12 @@ class MaterialUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $material = Material::findOrFail(request('id'));
+        $materialId = $material->id;
         $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
 
         return [
-            'name' => 'string',
-            'image' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+            'name' => "required|string|unique:materials,$materialId",
             'status' => "required|in:$enum"
         ];
     }

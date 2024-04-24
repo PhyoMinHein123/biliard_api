@@ -105,24 +105,6 @@ class ItemDataController extends Controller
 
             $itemData = ItemData::findOrFail($id);
 
-            if ($request->hasFile('image')) {
-                $path = Storage::putFile('public', $request->file('image'));
-                $image_url = url('api/image/');
-                $payload['image'] = $image_url.'/'.$path;
-
-                /**
-                 * remove old image
-                 */
-                $old_image_url = $itemData->image;
-                $parsedUrl = parse_url($itemData->image);
-                $old_image_path = substr($parsedUrl['path'], 11);
-
-                if (Storage::exists($old_image_path)) {
-                    $delete = Storage::delete($old_image_path);
-                }
-
-            }
-
             $itemData->update($payload->toArray());
 
             DB::commit();

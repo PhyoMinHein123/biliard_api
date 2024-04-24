@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\GeneralStatusEnum;
 use App\Models\Category;
+use App\Models\Item;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Helpers\Enum;
 
@@ -26,15 +27,16 @@ class ItemUpdateRequest extends FormRequest
     {
         $categories = Category::all()->pluck('id')->toArray();
         $categories = implode(',', $categories);
+        $item = Item::findOrFail(request('id'));
+        $itemId = $item->id;
         $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
 
         return [
-            'name' => 'string',
-            'image' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-            'price' => 'numeric',
-            'purchase_price' => 'numeric',
-            'status' => "required|in:$enum"
-            'category_id' => "in:$categories",
+            'name' => "required|string|unique:items,name,$itemId",
+            'price' => 'required|numeric',
+            'purchase_price' => 'required|numeric',
+            'status' => "required|in:$enum",
+            'category_id' => "required|in:$categories",
         ];
     }
 }

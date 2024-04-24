@@ -146,7 +146,7 @@ class TransferMaterialController extends Controller
         try {
 
             $TransferMaterial = TransferMaterial::findOrFail($id);
-            $TransferMaterial->delete($id);
+            $TransferMaterial->forceDelete();
 
             DB::commit();
 

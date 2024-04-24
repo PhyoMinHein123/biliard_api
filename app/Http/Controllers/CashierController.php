@@ -111,7 +111,7 @@ class CashierController extends Controller
         try {
 
             $cashier = Cashier::findOrFail($id);
-            $cashier->delete($id);
+            $cashier->forceDelete();
 
             DB::commit();
 

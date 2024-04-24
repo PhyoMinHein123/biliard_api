@@ -46,4 +46,9 @@ class Shop extends Model
             }
         });
     }
+
+    public function itemData()
+    {
+        return $this->hasMany('App\Models\ItemData', 'shop_id');
+    }
 }

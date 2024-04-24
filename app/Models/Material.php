@@ -12,7 +12,7 @@ class Material extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name', 'qty', 'shop_id', 'status'
+        'name', 'image', 'status'
     ];
 
     protected $casts = [

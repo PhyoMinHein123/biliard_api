@@ -29,7 +29,7 @@ class ItemStoreRequest extends FormRequest
         $enum = implode(',', (new Enum(GeneralStatusEnum::class))->values());
 
         return [
-            'name' => 'required| string',
+            'name' => 'required| string|unique:items,name',
             'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             'price' => 'required| numeric',
             'purchase_price' => 'required| numeric',

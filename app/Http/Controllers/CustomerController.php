@@ -108,7 +108,7 @@ class CustomerController extends Controller
         try {
 
             $customer = Customer::findOrFail($id);
-            $customer->delete($id);
+            $customer->forceDelete();
 
             DB::commit();
 
