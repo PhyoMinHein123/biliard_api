@@ -22,6 +22,9 @@ use App\Http\Controllers\MaterialDataController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TransferItemController;
 use App\Http\Controllers\TransferMaterialController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\TablePackageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -224,6 +227,33 @@ Route::middleware('jwt')->group(function () {
         Route::post('/{id}', [InvoiceItemController::class, 'update']);       
         Route::patch('/{id}', [InvoiceItemController::class, 'update']);          
         Route::delete('/{id}', [InvoiceItemController::class, 'destroy']);         
+    });
+
+    Route::group(['prefix' => 'table-package'], function () {
+        Route::get('/', [TablePackageController::class, 'index']);         
+        Route::post('/', [TablePackageController::class, 'store']);        
+        Route::get('/{id}', [TablePackageController::class, 'show']);           
+        Route::post('/{id}', [TablePackageController::class, 'update']);       
+        Route::patch('/{id}', [TablePackageController::class, 'update']);          
+        Route::delete('/{id}', [TablePackageController::class, 'destroy']);         
+    });
+
+    Route::group(['prefix' => 'bill'], function () {
+        Route::get('/', [BillController::class, 'index']);         
+        Route::post('/', [BillController::class, 'store']);        
+        Route::get('/{id}', [BillController::class, 'show']);           
+        Route::post('/{id}', [BillController::class, 'update']);       
+        Route::patch('/{id}', [BillController::class, 'update']);          
+        Route::delete('/{id}', [BillController::class, 'destroy']);         
+    });
+
+    Route::group(['prefix' => 'payment'], function () {
+        Route::get('/', [PaymentController::class, 'index']);         
+        Route::post('/', [PaymentController::class, 'store']);        
+        Route::get('/{id}', [PaymentController::class, 'show']);           
+        Route::post('/{id}', [PaymentController::class, 'update']);       
+        Route::patch('/{id}', [PaymentController::class, 'update']);          
+        Route::delete('/{id}', [PaymentController::class, 'destroy']);         
     });
 
     Route::group(['prefix' => 'invoice'], function () {

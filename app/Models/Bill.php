@@ -2,21 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\BasicAudit;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TableNumber extends Model
+class Bill extends Model
 {
-    use HasFactory, SoftDeletes;
+    use BasicAudit, HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'description',
-        'cashier_id',
-        'shop_id'
+        'name','amount','shop_id'
     ];
 
     protected $casts = [
@@ -48,10 +44,5 @@ class TableNumber extends Model
     public function shop(): BelongsTo
     {
         return $this->belongsTo(Shop::class, 'shop_id');
-    }
-
-    public function cashier(): BelongsTo
-    {
-        return $this->belongsTo(Cashier::class, 'shop_id');
     }
 }

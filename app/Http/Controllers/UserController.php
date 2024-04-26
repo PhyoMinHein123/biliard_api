@@ -105,7 +105,7 @@ class UserController extends Controller
 
             $user = User::findOrFail($id);
 
-            if (isset($payload['image']) && is_file($payload['image'])) {
+            if ($request->hasFile('image')) {
                 $path = $request->file('image')->store('public/images');
                 $image_url = Storage::url($path);
                 $payload['image'] = $image_url;

@@ -2,14 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\TableStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Shop;
-use App\Models\Cashier;
-use App\Enums\TableStatusEnum;
-use App\Helpers\Enum;
 
-class TableNumberUpdateRequest extends FormRequest
+class BillStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,15 +24,11 @@ class TableNumberUpdateRequest extends FormRequest
     {
         $shops = Shop::all()->pluck('id')->toArray();
         $shops = implode(',', $shops);
-        $cashiers = Cashier::all()->pluck('id')->toArray();
-        $cashiers = implode(',', $cashiers);
-        $enum = implode(',', (new Enum(TableStatusEnum::class))->values());
 
         return [
-            'name' => 'required| string',
-            'description' => 'nullable| string',
-            'shop_id' => "required|in:$shops",
-            'cashier_id' => "required|in:$cashiers"
+            'name' => 'required|string',
+            'amount' => 'required|numeric',
+            'shop_id' => "required|in:$shops"
         ];
     }
 }

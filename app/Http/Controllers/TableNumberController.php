@@ -9,6 +9,7 @@ use App\Models\Shop;
 use App\Models\User;
 use App\Models\Cashier;
 use Illuminate\Http\Request;
+use App\Enums\TableStatusEnum;
 use Illuminate\Support\Facades\DB;
 
 class TableNumberController extends Controller
@@ -51,6 +52,7 @@ class TableNumberController extends Controller
     {
         DB::beginTransaction();
         $payload = collect($request->validated());
+        $payload['status'] = TableStatusEnum::SUCCESS;
 
         try {
 
