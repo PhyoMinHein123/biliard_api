@@ -214,10 +214,29 @@ class UserController extends Controller
 
     public function exportpdf()
     {
-        $data = User::all();
-        $pdf = Pdf::loadView('userexport', ['data' => $data]);
-        return $pdf->download();
-    }
+            $data = User::all();
+
+    $pdf = PDF::loadView('userexport', ['data' => $data]);
+
+    // Set custom styles for the PDF content
+    $customCss = "
+        table {
+            margin: 0 auto;
+            font-size: 10px; /* Set the font size to 10px */
+        }
+    ";
+    
+    $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+    $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+    $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
+    $pdf->getDomPDF()->set_option('debugCss', true);
+
+    // Apply custom CSS
+    $pdf->getDomPDF()->set_base_path(public_path());
+    $pdf->getDomPDF()->loadHtml('<style>' . $customCss . '</style>' . view('userexport', ['data' => $data])->render());
+    
+    return $pdf->download('userexport.pdf');
+}
 
     public function exportpdfparams()
     {

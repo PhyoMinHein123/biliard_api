@@ -26,14 +26,10 @@ class RoleUpdateRequest extends FormRequest
         $role = Role::findOrFail(request('id'));
         $roleId = $role->id;
 
-        $permissions = Permission::all()->pluck('id')->toArray();
-        $permissions = implode(',', $permissions);
-
         return [
-            'name' => "string | unique:roles,name,$roleId",
-            'description' => 'string | nullable',
+            'name' => "required | string | unique:roles,name,$roleId",
+            'description' => 'required | string ',
             'permissions' => 'array',
-            'permissions.*' => "required| numeric | in:$permissions",
         ];
 
     }

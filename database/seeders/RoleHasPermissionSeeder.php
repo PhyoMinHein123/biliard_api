@@ -27,18 +27,18 @@ class RoleHasPermissionSeeder extends Seeder
             if ($role->name === RoleEnum::MANAGER->value) {
 
                 $role->syncPermissions([
-                    'USER_INDEX',
-                    'USER_STORE',
+                    'User_All',
+                    'User_Create',
                 ]);
             }
 
             if ($role->name === RoleEnum::WAITER->value) {
 
                 $role->syncPermissions([
-                    'TABLE_NUMBER_INDEX',
-                    'ORDER_INDEX',
-                    'ORDER_UPDATE',
-                    'ORDER_STORE',
+                    'Table_Number_All',
+                    'Order_All',
+                    'Order_Update',
+                    'Order_Create',
                 ]);
             }
         });

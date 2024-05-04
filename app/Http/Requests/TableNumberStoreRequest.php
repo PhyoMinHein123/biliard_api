@@ -34,6 +34,7 @@ class TableNumberStoreRequest extends FormRequest
         return [
             'name' => 'required| string',
             'description' => 'nullable| string',
+            'amount' => 'required|numeric',
             'shop_id' => "required|in:$shops",
             'cashier_id' => "required|in:$cashiers"
         ];

@@ -16,12 +16,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('table_number_id');
             $table->unsignedBigInteger('shop_id');
-            $table->json('items');
+            $table->json('items')->nullable();
             $table->datetime('checkin');
             $table->datetime('checkout')->nullable();
             $table->unsignedInteger('table_charge')->nullable();
             $table->unsignedInteger('items_charge')->nullable();
-            $table->string('total_time');
+            $table->string('total_time')->nullable();
             $table->string('status')->default(OrderStatusEnum::PENDING->value);
             $table->auditColumns();
 

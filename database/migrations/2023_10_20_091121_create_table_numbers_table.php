@@ -16,8 +16,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
+            $table->unsignedInteger('amount');
             $table->unsignedInteger('cashier_id');
             $table->unsignedInteger('shop_id');
+            $table->unsignedInteger('order_id')->nullable();
             $table->string('status')->default(TableStatusEnum::SUCCESS->value);
             $table->auditColumns();
 

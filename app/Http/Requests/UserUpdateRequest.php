@@ -36,7 +36,7 @@ class UserUpdateRequest extends FormRequest
             'name' => "required|string| unique:users,name,$userId| max:24 | min:4",
             'email' => "required| email| unique:users,email,$userId|string",
             'phone' => "nullable|unique:users,phone,$userId|min:9|max:13",
-            'address' => 'string| nullable| max:100',
+            'address' => 'string| nullable| max:100',            
             'shop_id' => "required|in:$shops",
             'status' => "required|in:$enum"
         ];

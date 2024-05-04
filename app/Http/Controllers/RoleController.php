@@ -6,6 +6,7 @@ use App\Http\Requests\RoleStoreRequest;
 use App\Http\Requests\RoleUpdateRequest;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,9 +19,20 @@ class RoleController extends Controller
 
         try {
 
-            $roles = Role::with(['permissions'])->sortingQuery()
-                ->searchQuery()
+            $roles = Role::searchQuery()
+                ->sortingQuery()
+                ->filterQuery()
+                ->filterDateQuery()
                 ->paginationQuery();
+
+            $roles->transform(function ($role) {
+                $role->created_by = $role->created_by ? User::find($role->created_by)->name : "Unknown";
+                $role->updated_by = $role->updated_by ? User::find($role->updated_by)->name : "Unknown";
+                $role->deleted_by = $role->deleted_by ? User::find($role->deleted_by)->name : "Unknown";
+                $role->permissions_count = $role->permissions()->count();
+                unset($role->permissions);
+                return $role;
+            });
 
             DB::commit();
 
@@ -37,18 +49,16 @@ class RoleController extends Controller
     {
         DB::beginTransaction();
         $payload = collect($request->validated());
+        $payload['guard_name'] = 'api';
 
         try {
-
             $role = Role::create($payload->toArray());
-
+        
             DB::commit();
 
-            return $this->success('role created successfully', $role);
-
+            return $this->success('Role created successfully', $role);
         } catch (Exception $e) {
             DB::rollback();
-
             return $this->internalServerError();
         }
     }
@@ -86,26 +96,15 @@ class RoleController extends Controller
 
             $role = Role::with(['permissions'])->findOrFail($id);
             $role->update($payloadUpdate);
-
-            /*** get permission from database */
-            $getPermissions = $role->toArray()['permissions'];
-
-            $oldPermissions = collect($getPermissions)->map(function ($permission) {
-                return $permission['id'];
-            });
-
-            $role->revokePermissionTo($oldPermissions);
-
+            
             if (isset($payload['permissions'])) {
-                $currentRole = Role::findById($id);
-                $permissionIds = $payload['permissions'];
-
-                foreach ($permissionIds as $permissionId) {
-                    $permission = Permission::findById($permissionId);
-                    $currentRole->givePermissionTo($permission['name']);
-                }
-
+                $permissionIds = $payload['permissions'];                           
+                $permissions = Permission::whereIn('id', $permissionIds)->get();                            
+                $role->permissions()->sync($permissions);
+            } else {              
+                $role->permissions()->detach();
             }
+            
 
             DB::commit();
 

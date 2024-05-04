@@ -14,9 +14,12 @@ class TableNumber extends Model
 
     protected $fillable = [
         'name',
+        'amount',
         'description',
         'cashier_id',
-        'shop_id'
+        'shop_id',
+        'order_id',
+        'status'
     ];
 
     protected $casts = [

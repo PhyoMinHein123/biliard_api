@@ -17,6 +17,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class CategoryController extends Controller
 {
+
     public function index(Request $request)
     {
 
@@ -24,19 +25,12 @@ class CategoryController extends Controller
 
         try {
 
-            $categories = Category::sortingQuery()
+            $categories = Category::with('items')
+                ->sortingQuery()
                 ->searchQuery()
                 ->filterQuery()
                 ->filterDateQuery()
                 ->paginationQuery();
-
-            $categories->transform(function ($category) {
-                $category->created_by = $category->created_by ? User::find($category->created_by)->name : "Unknown";
-                $category->updated_by = $category->updated_by ? User::find($category->updated_by)->name : "Unknown";
-                $category->deleted_by = $category->deleted_by ? User::find($category->deleted_by)->name : "Unknown";
-                
-                return $category;
-            });
 
             DB::commit();
 

@@ -42,14 +42,20 @@ class Handler extends ExceptionHandler
         $message = $exception->getMessage();
 
         switch ($exceptionClass) {
-            case "Illuminate\Database\Eloquent\NotFoundHttpException":
+            case "Symfony\Component\HttpKernel\Exception\NotFoundHttpException":
                 return JsonResponder::notFound('Route Not Found');
 
+            case "Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException":
+                return JsonResponder::methodNotAllowed('Method Not Allowed');
+    
             case "Illuminate\Database\Eloquent\MethodNotAllowedHttpException":
                 return JsonResponder::methodNotAllowed($exception->getMessage());
 
             case "Illuminate\Database\Eloquent\ModelNotFoundException":
                 return JsonResponder::notFound('Resource Not Found');
+
+            case "Illuminate\Auth\AuthenticationException":
+                return JsonResponder::unauthenticated($exception->getMessage());
 
             case "App\Exceptions\UnauthorizedException":
                 return JsonResponder::unauthenticated($exception->getMessage());
@@ -74,7 +80,6 @@ class Handler extends ExceptionHandler
 
             default:
                 info($exception);
-
                 return JsonResponder::internalServerError();
         }
     }

@@ -20,6 +20,11 @@ class Category extends Model
         'updated_at' => 'datetime: Y-m-d H:i:s'
     ];
 
+    public function items()
+    {
+        return $this->hasMany(Item::class, 'category_id', 'id');
+    }
+
     protected static function boot()
     {
 

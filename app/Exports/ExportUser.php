@@ -15,7 +15,7 @@ class ExportUser implements FromCollection, WithHeadings, WithMapping
     */
     public function collection()
     {
-        return User::select('id', 'name', 'image', 'phone', 'email', 'address', 'shop_id', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at')->get();
+        return User::select('id', 'name', 'phone', 'email', 'address', 'shop_id', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at')->get();
     }
 
     public function headings(): array
@@ -23,7 +23,6 @@ class ExportUser implements FromCollection, WithHeadings, WithMapping
         return [
             'Id',
             'Name',
-            'Image',
             'Phone',
             'Email',
             'Address',
@@ -46,7 +45,6 @@ class ExportUser implements FromCollection, WithHeadings, WithMapping
         return [
             $post->id,
             $post->name,
-            $post->image,
             $post->phone,
             $post->email,
             $post->address,

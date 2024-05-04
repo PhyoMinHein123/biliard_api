@@ -19,7 +19,10 @@ class RoleSeeder extends Seeder
 
                 $createRole = Role::create([
                     'name' => $role,
+                    'description' => 'hello',
                     'guard_name' => 'api',
+                    'created_by' => '1',
+                    'updated_by' => '1',
                 ]);
 
             } catch (Exception $e) {

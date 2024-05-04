@@ -20,10 +20,6 @@ class ImportUser implements ToModel, WithHeadingRow
             'shop_id' => 1,
             'status' => $row['status'],
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-            'created_by' => $row['created_by'],
-            'updated_by' => $row['updated_by'],
-            'created_at' => $row['created_at'],
-            'updated_at' => $row['updated_at'],
         ]);
     }
 }

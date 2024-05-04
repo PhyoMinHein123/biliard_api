@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OrderStoreRequest;
 use App\Http\Requests\OrderUpdateRequest;
 use App\Models\Order;
+use App\Models\TableNumber;
+use App\Enums\TableStatusEnum;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,8 +20,10 @@ class OrderController extends Controller
 
         try {
 
-            $orders = Order::with(['orderItems', 'orderItems.product', 'orderItems.user', 'tableNumber'])->sortingQuery()
-                ->searchQuery()
+            $orders = Order::searchQuery()
+                ->sortingQuery()
+                ->filterQuery()
+                ->filterDateQuery()
                 ->paginationQuery();
 
             DB::commit();
@@ -40,8 +44,16 @@ class OrderController extends Controller
         $payload['checkin'] = Carbon::now('Asia/Yangon');
 
         try {
-
+            
             $order = Order::create($payload->toArray());
+           
+            if ($request->has('table_number_id')) {
+                $tableNumber = TableNumber::findOrFail($request->table_number_id);
+                $tableNumber->update([
+                    'status' => TableStatusEnum::PENDING,
+                    'order_id' => $order->id
+                ]);
+            }
 
             DB::commit();
 

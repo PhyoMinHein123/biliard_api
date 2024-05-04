@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangePasswordRequest;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequest;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +45,27 @@ class AuthController extends Controller
             return response()->json(['message' => 'Account is not ACTIVE'], 400);
         }
 
-        return $this->success('Login Successfully', $this->createNewToken($token), $user);
+        DB::beginTransaction();
+        $role = Role::with(['permissions'])->findOrFail($user->id);
+        DB::commit();       
+       
+        $responseData = [
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,                
+                'image' => $user->image,
+                'address' => $user->address,
+                'shop_id' => $user->shop_id,
+                'status' => $user->status,                            
+            ],
+            'role' => $role->name,
+            'permissions' => $role->permissions
+        ];
+
+        return $this->success('Login Successfully', $responseData);
     }
 
     /**
@@ -104,7 +125,27 @@ class AuthController extends Controller
      */
     public function userProfile()
     {
-        return $this->success('user profile retrived successfully', auth()->user());
+        $user = auth()->user();
+
+        DB::beginTransaction();
+        $role = Role::with(['permissions'])->findOrFail($user->id);
+        DB::commit();  
+        
+        $responseData = [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,                
+                'image' => $user->image,
+                'address' => $user->address,
+                'shop_id' => $user->shop_id,
+                'status' => $user->status,                            
+            ],
+            'role' => $role->name,
+            'permissions' => $role->permissions
+        ];
+        return $this->success('user profile retrived successfully', $responseData);
     }
 
     public function changePassword(ChangePasswordRequest $request, $id)

@@ -25,8 +25,8 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'checkin' => 'datetime',
-        'checkout' => 'datetime',
+        'checkin' => 'datetime: Y-m-d H:i:s',
+        'checkout' => 'datetime: Y-m-d H:i:s',
         'items' => 'json',
         'created_at' => 'datetime: Y-m-d H:i:s',
         'updated_at' => 'datetime: Y-m-d H:i:s'
