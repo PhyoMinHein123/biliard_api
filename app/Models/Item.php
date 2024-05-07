@@ -51,9 +51,23 @@ class Item extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
+    // public function itemData()
+    // {
+    //     return $this->hasMany('App\Models\ItemData', 'item_id');
+    // }
+
+    // public function itemData()
+    // {
+    //     return $this->hasOne(ItemData::class);
+    // }
+
     public function itemData()
     {
-        return $this->hasMany('App\Models\ItemData', 'item_id');
+        return $this->hasOne(ItemData::class)->withDefault(function ($itemData, $item) {
+            if (is_null($itemData->shop_id)) {
+                $itemData->qty = 0;
+            }
+        });
     }
     
 }

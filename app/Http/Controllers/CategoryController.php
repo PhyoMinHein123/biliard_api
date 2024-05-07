@@ -25,7 +25,14 @@ class CategoryController extends Controller
 
         try {
 
-            $categories = Category::with('items')
+            $shopId = $request->input('shop_id');
+
+            $categories = Category::with(['items', 'items.itemData' => function ($query) use ($shopId) {
+                // Apply condition based on shop_id
+                if ($shopId) {
+                    $query->where('shop_id', $shopId);
+                }
+            }])
                 ->sortingQuery()
                 ->searchQuery()
                 ->filterQuery()
