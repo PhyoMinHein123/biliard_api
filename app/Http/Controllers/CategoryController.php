@@ -10,9 +10,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\ExportShop;
-use App\Exports\ExportShopParams;
-use App\Imports\ImportShop;
+use App\Exports\ExportCategory;
+use App\Exports\ExportCategoryParams;
+use App\Imports\ImportCategory;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class CategoryController extends Controller
@@ -28,7 +28,7 @@ class CategoryController extends Controller
             $shopId = $request->input('shop_id');
 
             $categories = Category::with(['items', 'items.itemData' => function ($query) use ($shopId) {
-                // Apply condition based on shop_id
+               
                 if ($shopId) {
                     $query->where('shop_id', $shopId);
                 }
@@ -38,6 +38,14 @@ class CategoryController extends Controller
                 ->filterQuery()
                 ->filterDateQuery()
                 ->paginationQuery();
+
+                $categories->transform(function ($category) {
+                    $category->created_by = $category->created_by ? User::find($category->created_by)->name : "Unknown";
+                    $category->updated_by = $category->updated_by ? User::find($category->updated_by)->name : "Unknown";
+                    $category->deleted_by = $category->deleted_by ? User::find($category->deleted_by)->name : "Unknown";
+                    
+                    return $category;
+                });
 
             DB::commit();
 
@@ -130,7 +138,7 @@ class CategoryController extends Controller
 
     public function exportexcel()
     {
-        return Excel::download(new ExportShop, 'Shops.xlsx');
+        return Excel::download(new ExportCategory, 'Shops.xlsx');
     }
 
     public function exportparams(Request $request)
@@ -146,32 +154,32 @@ class CategoryController extends Controller
             'start_date' => $request->input('start_date'),
             'end_date' => $request->input('end_date'),
         ];
-        return Excel::download(new ExportShopParams($filters), 'Shops.xlsx');
+        return Excel::download(new ExportCategoryParams($filters), 'Shops.xlsx');
     }
 
     public function exportpdf()
     {
-        $data = Shop::all();
-        $pdf = Pdf::loadView('shopexport', ['data' => $data]);
+        $data = Category::all();
+        $pdf = Pdf::loadView('categoryexport', ['data' => $data]);
         return $pdf->download();
     }
 
     public function exportpdfparams()
     {
-        $data = Shop::searchQuery()
+        $data = Category::searchQuery()
         ->sortingQuery()
         ->filterQuery()
         ->filterDateQuery()
         ->paginationQuery();
         
-        $pdf = Pdf::loadView('shopexport', ['data' => $data]);
+        $pdf = Pdf::loadView('categoryexport', ['data' => $data]);
         return $pdf->download();
     }
 
     public function import()
     {
-        Excel::import(new ImportShop, request()->file('file'));
+        Excel::import(new ImportCategory, request()->file('file'));
 
-        return $this->success('Shop is imported successfully');
+        return $this->success('Category is imported successfully');
     }
 }

@@ -6,7 +6,8 @@ use App\Models\TableNumber;
 use App\Models\Shop;
 use App\Enums\OrderStatusEnum;
 use App\Helpers\Enum;
-
+use App\Models\Customer;
+use App\Models\Payment;
 use Illuminate\Foundation\Http\FormRequest;
 
 class OrderStoreRequest extends FormRequest
@@ -32,18 +33,28 @@ class OrderStoreRequest extends FormRequest
         $shops = Shop::all()->pluck('id')->toArray();
         $shops = implode(',', $shops);
 
+        $customers = Customer::all()->pluck('id')->toArray();
+        $customers = implode(',', $customers);
+
+        $payments = Payment::all()->pluck('id')->toArray();
+        $payments = implode(',', $payments);
+
         $enum = implode(',', (new Enum(OrderStatusEnum::class))->values());
 
         return [
+            'invoice_number' => "nullable|string",
             'table_number_id' => "required|in:$tableNumbers",
-            'items' => "nullable|json",
-            'status' => "required|in:$enum",
+            'shop_id' => "required|in:$shops",
+            'customer_id' => "nullable|in:$customers",
+            'payment_id' => "nullable|in:$payments",
             'checkin' => "nullable|datetime",
             'checkout' => "nullable|datetime",
             'table_charge' => "nullable|numeric",
             'items_charge' => "nullable|numeric",
             'total_time' => "nullable|string",
-            'shop_id' => "required|in:$shops",
+            'charge' => "nullable|numeric",
+            'refund' => "nullable|numeric",
+            'status' => "required|in:$enum",
         ];
     }
 }

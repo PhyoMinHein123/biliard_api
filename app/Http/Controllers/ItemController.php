@@ -10,6 +10,11 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ExportShop;
+use App\Exports\ExportShopParams;
+use App\Imports\ImportCategory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ItemController extends Controller
 {
@@ -126,12 +131,7 @@ class ItemController extends Controller
 
             $product = Item::findOrFail($id);
             $product->forceDelete();
-
-            /****
-             *
-             * delete public image
-             */
-            $old_image_url = $product->image;
+            
             $parsedUrl = parse_url($product->image);
             $old_image_path = substr($parsedUrl['path'], 11);
             Storage::delete($old_image_path);

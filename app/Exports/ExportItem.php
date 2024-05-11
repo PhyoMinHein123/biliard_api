@@ -4,18 +4,17 @@ namespace App\Exports;
 
 use App\Models\Item;
 use App\Models\User;
+use App\Models\Category;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
 class ExportItem implements FromCollection, WithHeadings, WithMapping
 {
-    /**
-    * @return \Illuminate\Support\Collection
-    */
+
     public function collection()
     {
-        return Item::select('id', 'name', 'open_time', 'close_time', 'address', 'phone', 'created_by', 'updated_by', 'created_at', 'updated_at')->get();
+        return Item::select('id', 'name', 'price', 'purchase_price', 'status', 'cateogry_id', 'created_by', 'updated_by', 'created_at', 'updated_at')->get();
     }
 
     public function headings(): array
@@ -23,10 +22,10 @@ class ExportItem implements FromCollection, WithHeadings, WithMapping
         return [
             'Id',
             'Name',
-            'Open Time',
-            'Close Time',
-            'Address',
-            'Phone',
+            'Price',
+            'Purchase Price',
+            'Status',
+            'Category',
             'Created By',
             'Updated By',
             'Created At',
@@ -38,14 +37,15 @@ class ExportItem implements FromCollection, WithHeadings, WithMapping
     {
         $createdByUser = User::find($post->created_by);
         $updatedByUser = User::find($post->updated_by);
+        $category = Category::find($post->category_id);
 
         return [
             $post->id,
             $post->name,
-            $post->open_time,
-            $post->close_time,
-            $post->address,
-            $post->phone,
+            $post->price,
+            $post->purchase_price,
+            $post->status,
+            $category ? $category->name : 'Unknown',
             $createdByUser ? $createdByUser->name : 'Unknown',
             $updatedByUser ? $updatedByUser->name : 'Unknown',
             $post->created_at,

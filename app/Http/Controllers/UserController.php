@@ -24,7 +24,8 @@ class UserController extends Controller
 
         try {
 
-            $users = User::searchQuery()
+            $users = User::with(['roles'])
+                ->searchQuery()
                 ->sortingQuery()
                 ->filterQuery()
                 ->filterDateQuery()
@@ -32,6 +33,7 @@ class UserController extends Controller
 
             $users->transform(function ($user) {
                 $user->shop_id = $user->shop_id ? Shop::find($user->shop_id)->name : "Unknown";
+                $user->role_names = $user->roles->isNotEmpty() ? $user->roles[0]->name : null;
                 $user->created_by = $user->created_by ? User::find($user->created_by)->name : "Unknown";
                 $user->updated_by = $user->updated_by ? User::find($user->updated_by)->name : "Unknown";
                 $user->deleted_by = $user->deleted_by ? User::find($user->deleted_by)->name : "Unknown";
@@ -84,6 +86,7 @@ class UserController extends Controller
         try {
 
             $user = User::with(['roles'])->findOrFail($id);
+            $user->role_names = $user->roles->isNotEmpty() ? $user->roles[0]->name : null;
             DB::commit();
 
             return $this->success('user retrived successfully by id', $user);
@@ -109,6 +112,10 @@ class UserController extends Controller
                 $path = $request->file('image')->store('public/images');
                 $image_url = Storage::url($path);
                 $payload['image'] = $image_url;
+            }
+
+            if ($payload->has('role_names')) {
+                $user->assignRole($payload['role_names']);
             }
 
             $user->update($payload->toArray());
@@ -214,29 +221,10 @@ class UserController extends Controller
 
     public function exportpdf()
     {
-            $data = User::all();
-
-    $pdf = PDF::loadView('userexport', ['data' => $data]);
-
-    // Set custom styles for the PDF content
-    $customCss = "
-        table {
-            margin: 0 auto;
-            font-size: 10px; /* Set the font size to 10px */
-        }
-    ";
-    
-    $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
-    $pdf->getDomPDF()->set_option('isPhpEnabled', true);
-    $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
-    $pdf->getDomPDF()->set_option('debugCss', true);
-
-    // Apply custom CSS
-    $pdf->getDomPDF()->set_base_path(public_path());
-    $pdf->getDomPDF()->loadHtml('<style>' . $customCss . '</style>' . view('userexport', ['data' => $data])->render());
-    
-    return $pdf->download('userexport.pdf');
-}
+        $data = User::all();
+        $pdf = Pdf::loadView('userexport', ['data' => $data]);
+        return $pdf->download();
+    }
 
     public function exportpdfparams()
     {

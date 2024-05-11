@@ -119,51 +119,23 @@ class OrderController extends Controller
 
     public function update(OrderUpdateRequest $request, $id)
     {
-        // Start a database transaction
         DB::beginTransaction();
-    
+        $payload = collect($request->validated());
         try {
-            // Retrieve the order by ID or fail with an exception
+
             $order = Order::findOrFail($id);
-    
-            // Decode the incoming JSON items data if it exists
-            if ($request->has('items')) {
-                $items = json_decode($request->input('items'), true);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    throw new \InvalidArgumentException("Invalid JSON format for items.");
-                }
-            } else {
-                $items = $order->items; // Preserve existing items if not provided
-            }
-    
-            // Prepare payload, excluding 'items' from direct mass assignment
-            $payload = collect($request->validated())->except('items');
-    
-            // Update the order with payload
             $order->update($payload->toArray());
-    
-            // Update the JSON items separately if needed
-            $order->items = $items;
-            $order->save();
-    
-            // Commit the transaction
             DB::commit();
-    
-            // Return a success response
-            return $this->success('Order updated successfully', $order);
-    
+
+            return $this->success('order updated successfully by id', $order);
+
         } catch (Exception $e) {
-            // Rollback the transaction on any errors
             DB::rollback();
-    
-            // Log the exception here if needed for debugging
-            \Log::error("Order update failed: {$e->getMessage()}");
-    
-            // Return a generic error response
-            return $this->internalServerError("Failed to update order: {$e->getMessage()}");
+
+            return $this->internalServerError();
         }
     }
-    
+
 
     public function destroy($id)
     {

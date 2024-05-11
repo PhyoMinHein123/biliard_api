@@ -14,14 +14,18 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->string('invoice_number');
             $table->unsignedBigInteger('table_number_id');
             $table->unsignedBigInteger('shop_id');
-            $table->json('items')->nullable();
+            $table->unsignedBigInteger('customer_id')->nullable();
             $table->datetime('checkin');
             $table->datetime('checkout')->nullable();
             $table->unsignedInteger('table_charge')->nullable();
             $table->unsignedInteger('items_charge')->nullable();
             $table->string('total_time')->nullable();
+            $table->unsignedInteger('charge')->nullable();
+            $table->unsignedInteger('refund')->nullable();
+            $table->string('payment_id')->nullable();
             $table->string('status')->default(OrderStatusEnum::PENDING->value);
             $table->auditColumns();
 
@@ -33,6 +37,16 @@ return new class extends Migration
             $table->foreign('shop_id')
                 ->references('id')
                 ->on('shops')
+                ->onDelete('cascade');
+            
+            $table->foreign('customer_id')
+                ->references('id')
+                ->on('customers')
+                ->onDelete('cascade');
+
+            $table->foreign('payment_id')
+                ->references('id')
+                ->on('payments')
                 ->onDelete('cascade');
         });
     }

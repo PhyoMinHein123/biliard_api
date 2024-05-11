@@ -57,7 +57,7 @@ class ExportShopParams implements FromCollection, WithHeadings, WithMapping
             $post->id,
             $post->name,
             $openTime,
-            $pcloseTime,
+            $closeTime,
             $post->address,
             $post->phone,
             $createdByUser ? $createdByUser->name : 'Unknown',

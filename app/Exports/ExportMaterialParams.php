@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ExportItemParams implements FromCollection, WithHeadings, WithMapping
+class ExportMaterialParams implements FromCollection, WithHeadings, WithMapping
 {
     protected $filters;
 
@@ -27,7 +27,7 @@ class ExportItemParams implements FromCollection, WithHeadings, WithMapping
         if (!empty($this->filters)) {
         }
 
-        return Item::select('id', 'name', 'price', 'purchase_price', 'status', 'cateogry_id', 'created_by', 'updated_by', 'created_at', 'updated_at')->get();
+        return Item::select('id', 'name', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at')->get();
     }
 
     public function headings(): array
@@ -35,10 +35,7 @@ class ExportItemParams implements FromCollection, WithHeadings, WithMapping
         return [
             'Id',
             'Name',
-            'Price',
-            'Purchase Price',
             'Status',
-            'Category',
             'Created By',
             'Updated By',
             'Created At',

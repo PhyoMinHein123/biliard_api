@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Customer;
 use App\Models\Order;
+use App\Models\Item;
 use Illuminate\Foundation\Http\FormRequest;
 
 class InvoiceStoreRequest extends FormRequest
@@ -24,22 +25,17 @@ class InvoiceStoreRequest extends FormRequest
     public function rules(): array
     {
 
-        $customers = Customer::all()->pluck('id')->toArray();
-        $customers = implode(',', $customers);
+        $items = Item::all()->pluck('id')->toArray();
+        $items = implode(',', $items);
 
         $orders = Order::all()->pluck('id')->toArray();
         $orders = implode(',', $orders);
 
         return [
-            'customer_id' => ['required', "in:$customers"],
             'order_id' => ['required', "in:$orders"],
-            'subtotal' => 'required| numeric',
-            'tax' => 'nullable | numeric',
-            'discount' => 'nullable | numeric',
+            'item_id' => ['required', "in:$items"],
+            'qty' => 'nullable | numeric',
             'total' => 'required| numeric',
-            'payment' => 'required| string',
-            'charge' => 'required| numeric',
-            'refund' => 'required| numeric',
         ];
     }
 }

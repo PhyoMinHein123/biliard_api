@@ -120,4 +120,51 @@ class CustomerController extends Controller
             return $this->internalServerError();
         }
     }
+
+    public function exportexcel()
+    {
+        return Excel::download(new ExportShop, 'Shops.xlsx');
+    }
+
+    public function exportparams(Request $request)
+    {
+        $filters = [
+            'page' => $request->input('page'),
+            'per_page' => $request->input('per_page'),
+            'columns' => $request->input('columns'),
+            'search' => $request->input('search'),
+            'order' => $request->input('order'),
+            'sort' => $request->input('sort'),
+            'value' => $request->input('value'),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
+        ];
+        return Excel::download(new ExportShopParams($filters), 'Shops.xlsx');
+    }
+
+    public function exportpdf()
+    {
+        $data = Category::all();
+        $pdf = Pdf::loadView('categoryexport', ['data' => $data]);
+        return $pdf->download();
+    }
+
+    public function exportpdfparams()
+    {
+        $data = Category::searchQuery()
+        ->sortingQuery()
+        ->filterQuery()
+        ->filterDateQuery()
+        ->paginationQuery();
+        
+        $pdf = Pdf::loadView('categoryexport', ['data' => $data]);
+        return $pdf->download();
+    }
+
+    public function import()
+    {
+        Excel::import(new ImportCategory, request()->file('file'));
+
+        return $this->success('Category is imported successfully');
+    }
 }

@@ -12,17 +12,10 @@ class Invoice extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'invoice_number',
-        'shop_id',
-        'customer_id',
         'order_id',
-        'subtotal',
-        'tax',
-        'discount',
+        'item_id',
+        'qty',
         'total',
-        'payment',
-        'charge',
-        'refund',
     ];
 
     protected $casts = [
@@ -51,9 +44,9 @@ class Invoice extends Model
         });
     }
 
-    public function customer(): BelongsTo
+    public function item(): BelongsTo
     {
-        return $this->belongsTo(Customer::class, 'customer_id');
+        return $this->belongsTo(Item::class, 'customer_id');
     }
 
     public function order(): BelongsTo
@@ -61,8 +54,4 @@ class Invoice extends Model
         return $this->belongsTo(Order::class, 'order_id');
     }
 
-    public function shop(): BelongsTo
-    {
-        return $this->belongsTo(Order::class, 'shop_id');
-    }
 }

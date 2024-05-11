@@ -13,32 +13,20 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice_number');
             $table->unsignedBigInteger('order_id');
-            $table->unsignedBigInteger('customer_id');
-            $table->unsignedBigInteger('shop_id');
-            $table->unsignedInteger('subtotal');
-            $table->unsignedInteger('tax')->nullable();
-            $table->unsignedInteger('discount')->nullable();
+            $table->unsignedBigInteger('item_id');
+            $table->unsignedInteger('qty');           
             $table->unsignedInteger('total');
-            $table->string('payment');
-            $table->unsignedInteger('charge');
-            $table->unsignedInteger('refund');
             $table->auditColumns();
-
-            $table->foreign('customer_id')
-                ->references('id')
-                ->on('customers')
-                ->onDelete('cascade');
 
             $table->foreign('order_id')
                 ->references('id')
                 ->on('orders')
                 ->onDelete('cascade');
 
-            $table->foreign('shop_id')
+            $table->foreign('item_id')
                 ->references('id')
-                ->on('shops')
+                ->on('items')
                 ->onDelete('cascade');
         });
     }
