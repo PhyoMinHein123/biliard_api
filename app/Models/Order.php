@@ -84,4 +84,9 @@ class Order extends Model
     {
         return $this->belongsTo(Shop::class, 'shop_id');
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'order_id', 'id');
+    }
 }

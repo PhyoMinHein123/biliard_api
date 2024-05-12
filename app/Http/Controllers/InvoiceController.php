@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\InvoiceStoreRequest;
 use App\Http\Requests\InvoiceUpdateRequest;
 use App\Models\Invoice;
+use App\Models\ItemData;
 use App\Exports\InvoicesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
@@ -43,26 +44,35 @@ class InvoiceController extends Controller
     public function store(InvoiceStoreRequest $request)
     {
         DB::beginTransaction();
-
-        $prefix = 'CP1-';
-        $timestamp = now()->timestamp;
-        $hashedValue = hash('crc32b', $timestamp);
+    
         $payload = collect($request->validated());
-        $payload['invoice_number'] = $prefix.$hashedValue;
-
+    
         try {
-
             $invoice = Invoice::create($payload->toArray());
+            $itemData = ItemData::where('item_id', $invoice->item_id)
+                                ->where('shop_id', $request->shop_id)
+                                ->first();
+    
+            if ($itemData) {
+                $newQuantity = $itemData->qty - $invoice->qty;
+                if ($newQuantity >= 0) {
+                    $itemData->update(['qty' => $newQuantity]);
+                } else {
+                    throw new Exception('Not enough stock available');
+                }
+            } else {
+                throw new Exception('Item data not found');
+            }
+    
             DB::commit();
-
-            return $this->success('invoice created successfully', $invoice);
-
+            return $this->success('Invoice created and stock updated successfully', $invoice);
+    
         } catch (Exception $e) {
             DB::rollback();
-
-            return $this->internalServerError();
+            return $this->internalServerError($e->getMessage());
         }
     }
+    
 
     public function show($id)
     {
@@ -112,21 +122,31 @@ class InvoiceController extends Controller
     public function destroy($id)
     {
         DB::beginTransaction();
+    
         try {
-
             $invoice = Invoice::findOrFail($id);
-            $invoice->delete($id);
+                    
+            $itemData = ItemData::where('item_id', $invoice->item_id)
+                                ->where('shop_id', $invoice->shop_id)
+                                ->first();
+    
+            if ($itemData) {
+                $itemData->increment('qty', $invoice->qty);
+            } else {
+                throw new Exception('Item data not found');
+            }
 
+            $invoice->delete();
+    
             DB::commit();
-
-            return $this->success('invoice deleted successfully by id', []);
-
+            return $this->success('Invoice deleted and stock returned successfully', []);
+    
         } catch (Exception $e) {
             DB::rollback();
-
-            return $this->internalServerError();
+            return $this->internalServerError($e->getMessage());
         }
     }
+    
 
     public function export()
     {

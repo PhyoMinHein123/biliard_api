@@ -21,7 +21,8 @@ class TableNumberController extends Controller
 
         try {
 
-            $tableNumbers = TableNumber::searchQuery()
+            $tableNumbers = TableNumber::with(['order'])
+                ->searchQuery()
                 ->sortingQuery()
                 ->filterQuery()
                 ->filterDateQuery()

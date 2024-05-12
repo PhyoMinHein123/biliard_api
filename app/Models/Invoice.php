@@ -44,9 +44,9 @@ class Invoice extends Model
         });
     }
 
-    public function item(): BelongsTo
+    public function item()
     {
-        return $this->belongsTo(Item::class, 'customer_id');
+        return $this->belongsTo(Item::class, 'item_id', 'id');
     }
 
     public function order(): BelongsTo

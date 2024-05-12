@@ -21,7 +21,8 @@ class OrderController extends Controller
 
         try {
 
-            $orders = Order::searchQuery()
+            $orders = Order::with('invoices') 
+                ->searchQuery()
                 ->sortingQuery()
                 ->filterQuery()
                 ->filterDateQuery()
@@ -34,38 +35,6 @@ class OrderController extends Controller
         } catch (Exception $e) {
             DB::rollback();
 
-            return $this->internalServerError();
-        }
-    }
-
-    public function index2(Request $request)
-    {
-        DB::beginTransaction();
-
-        try {           
-            $shopId = $request->input('shop_id');
-            $tableNumberId = $request->input('table_number_id');
-            $status = $request->input('status', OrderStatusEnum::PENDING->value); // Default to PENDING if not provided
-           
-            $orders = Order::when($shopId, function ($query) use ($shopId) {
-                    return $query->where('shop_id', $shopId);
-                })
-                ->when($tableNumberId, function ($query) use ($tableNumberId) {
-                    return $query->where('table_number_id', $tableNumberId);
-                })
-                ->where('status', $status)
-                ->searchQuery()
-                ->sortingQuery()
-                ->filterQuery()
-                ->filterDateQuery()
-                ->paginationQuery();
-
-            DB::commit();
-          
-            return $this->success('Orders retrieved successfully', $orders);
-        } catch (Exception $e) {           
-            DB::rollback();
-            
             return $this->internalServerError();
         }
     }
@@ -105,7 +74,7 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::with('invoices.item')->findOrFail($id);
             DB::commit();
 
             return $this->success('order retrived successfully by id', $order);

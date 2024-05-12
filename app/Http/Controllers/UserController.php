@@ -68,6 +68,10 @@ class UserController extends Controller
 
             $user = User::create($payload->toArray());
 
+            if($request->input('role_names')){
+                $user->assignRole($request->input('role_names'));
+            }
+
             DB::commit();
 
             return $this->success('user created successfully', $user);
@@ -114,11 +118,12 @@ class UserController extends Controller
                 $payload['image'] = $image_url;
             }
 
-            if ($payload->has('role_names')) {
-                $user->assignRole($payload['role_names']);
+            if($request->input('role_names')){
+                $user->assignRole($request->input('role_names'));
             }
 
             $user->update($payload->toArray());
+            $user->role_names = $user->roles->isNotEmpty() ? $user->roles[0]->name : null;
 
             DB::commit();
 

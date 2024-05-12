@@ -144,4 +144,5 @@ enum PermissionEnum: string
 
     /** AUTH */
     case AUTH_UPDATE = 'Auth_Update';
+    case DASHBOARD_INDEX = 'Dashboard_All';
 }

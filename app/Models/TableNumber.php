@@ -57,4 +57,9 @@ class TableNumber extends Model
     {
         return $this->belongsTo(Cashier::class, 'shop_id');
     }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id', 'id');
+    }
 }
