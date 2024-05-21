@@ -303,7 +303,7 @@ Route::middleware('jwt')->group(function () {
         Route::post('/', [InvoiceController::class, 'store'])->permission(PermissionEnum::INVOICE_STORE->value);         
         Route::get('/{id}', [InvoiceController::class, 'show'])->permission(PermissionEnum::INVOICE_SHOW->value);           
         Route::post('/{id}', [InvoiceController::class, 'update'])->permission(PermissionEnum::INVOICE_UPDATE->value);        
-        Route::post('/{id}', [InvoiceController::class, 'destroy'])->permission(PermissionEnum::INVOICE_DESTROY->value);          
+        Route::delete('/{id}', [InvoiceController::class, 'destroy'])->permission(PermissionEnum::INVOICE_DESTROY->value);          
     });
 
     Route::group(['prefix' => 'dashboard'], function () {

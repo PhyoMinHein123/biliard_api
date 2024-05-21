@@ -7,6 +7,7 @@ use App\Http\Requests\InvoiceUpdateRequest;
 use App\Models\Invoice;
 use App\Models\ItemData;
 use App\Exports\InvoicesExport;
+use App\Models\Order;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -125,18 +126,18 @@ class InvoiceController extends Controller
     
         try {
             $invoice = Invoice::findOrFail($id);
+            $order = Order::findOrFail($invoice->order_id);
                     
             $itemData = ItemData::where('item_id', $invoice->item_id)
-                                ->where('shop_id', $invoice->shop_id)
+                                ->where('shop_id', $order->shop_id)
                                 ->first();
     
             if ($itemData) {
-                $itemData->increment('qty', $invoice->qty);
-            } else {
-                throw new Exception('Item data not found');
-            }
-
-            $invoice->delete();
+                $newQuantity = $itemData->qty + $invoice->qty;
+                $itemData->update(['qty' => $newQuantity]);    
+            } 
+            
+            $invoice->forceDelete();
     
             DB::commit();
             return $this->success('Invoice deleted and stock returned successfully', []);
