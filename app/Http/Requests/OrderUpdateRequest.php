@@ -43,18 +43,12 @@ class OrderUpdateRequest extends FormRequest
         $enum = implode(',', (new Enum(OrderStatusEnum::class))->values());
 
         return [
-            'invoice_number' => "required|string",
-            'table_number_id' => "required|in:$tableNumbers",
-            'shop_id' => "required|in:$shops",
-            'customer_id' => "required|in:$customers",
-            'payment_id' => "required|in:$payments",
-            'items' => "nullable|json",
-            'checkin' => "nullable|datetime",
-            'checkout' => "nullable|datetime",
+            'customer_id' => "nullable|in:$customers",
+            'payment_id' => "nullable|in:$payments",
             'table_charge' => "nullable|numeric",
             'items_charge' => "nullable|numeric",
-            'total_time' => "nullable|string",
-            'status' => "required|in:$enum",
+            'total_time' => "nullable|string"
         ];
+
     }
 }

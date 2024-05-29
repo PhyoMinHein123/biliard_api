@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\DB;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\BluetoothPrintConnector;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\Printer;
 
@@ -273,7 +274,9 @@ class PrinterController extends Controller
     {
         try {
             // Enter the device file for your USB printer here
-            $connector = new FilePrintConnector("/dev/usb/lp0");
+            // $connector = new NetworkPrintConnector("10.x.x.x", 9100);
+            $connector = new BluetoothPrintConnector("DC:0D:30:23:10:2A");
+            // $connector = new FilePrintConnector("/dev/usb/lp0");
             //$connector = new FilePrintConnector("/dev/usb/lp1");
             //$connector = new FilePrintConnector("/dev/usb/lp2");
         

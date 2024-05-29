@@ -47,15 +47,25 @@ class InvoiceController extends Controller
         DB::beginTransaction();
     
         $payload = collect($request->validated());
-    
-        try {
+
+    try {
+        $existingInvoice = Invoice::where('item_id', $request->item_id)
+                                  ->where('order_id', $request->order_id)
+                                  ->first();
+
+        if ($existingInvoice) {
+            $newQty = $existingInvoice->qty + $request->qty;
+            $existingInvoice->update(['qty' => $newQty]);
+            $invoice = $existingInvoice;
+        } else {
             $invoice = Invoice::create($payload->toArray());
+        }
             $itemData = ItemData::where('item_id', $invoice->item_id)
                                 ->where('shop_id', $request->shop_id)
                                 ->first();
     
             if ($itemData) {
-                $newQuantity = $itemData->qty - $invoice->qty;
+                $newQuantity = $itemData->qty - $request->qty;
                 if ($newQuantity >= 0) {
                     $itemData->update(['qty' => $newQuantity]);
                 } else {
